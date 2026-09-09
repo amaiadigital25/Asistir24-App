@@ -1,13 +1,6 @@
-import { env } from "cloudflare:workers";
-import { drizzle } from "drizzle-orm/d1";
+import postgres from "postgres";
+import { drizzle } from "drizzle-orm/postgres-js";
 import * as schema from "./schema";
 
-export function getDb() {
-  if (!env.DB) {
-    throw new Error(
-      "Cloudflare D1 binding `DB` is unavailable. Set the `d1` field in .openai/hosting.json to `DB` or let your control plane inject the real binding values before using the database."
-    );
-  }
-
-  return drizzle(env.DB, { schema });
-}
+let client: ReturnType<typeof postgres> | undefined;
+export function getDb(){const url=process.env.DATABASE_URL;if(!url)throw new Error("DATABASE_URL no está configurada");client??=postgres(url,{max:5,prepare:false,ssl:process.env.NODE_ENV==="production"?"require":false});return drizzle(client,{schema})}

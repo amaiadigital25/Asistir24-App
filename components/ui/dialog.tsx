@@ -14,9 +14,11 @@ function Dialog({
 }
 
 function DialogTrigger({
+  render,
+  children,
   ...props
-}: React.ComponentProps<typeof DialogPrimitive.Trigger>) {
-  return <DialogPrimitive.Trigger data-slot="dialog-trigger" {...props} />
+}: React.ComponentProps<typeof DialogPrimitive.Trigger> & { render?: React.ReactElement }) {
+  return <DialogPrimitive.Trigger data-slot="dialog-trigger" asChild={Boolean(render)} {...props}>{render ?? children}</DialogPrimitive.Trigger>
 }
 
 function DialogPortal({
