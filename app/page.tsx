@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Bell, CheckCircle2, ChevronRight, CircleDollarSign, Clock3, Gauge, Headphones, MapPin, Menu, Navigation, Phone, Plus, Search, ShieldCheck, Truck, Users, Wrench } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -28,8 +28,9 @@ export default function Home(){
   const [form,setForm]=useState({type:"Auxilio mecánico",company:"La Caja",origin:"",destination:"",price:""});
   const filtered=useMemo(()=>services.filter(s=>`${s.id} ${s.origin} ${s.company}`.toLowerCase().includes(query.toLowerCase())),[services,query]);
   const active=services.filter(s=>s.status!=="Finalizado").length;
-  function create(){if(!form.origin||!form.price)return toast.error("Completá el origen y el valor.");const item:Service={id:`A24-${1045+services.length}`,type:form.type,company:form.company,origin:form.origin,destination:form.destination||"—",price:Number(form.price),distance:0,status:"Disponible",eta:15};setServices([item,...services]);setOpen(false);setForm({...form,origin:"",destination:"",price:""});toast.success(`${item.id} publicado en la red.`)}
-  function update(id:string,status:Status){setServices(services.map(s=>s.id===id?{...s,status,provider:status==="Asignado"?"Tu unidad":s.provider}:s));toast.success(status==="Asignado"?"Servicio aceptado. La central fue notificada.":"Estado actualizado.")}
+  useEffect(()=>{fetch("/api/services").then(r=>r.ok?r.json():Promise.reject()).then(data=>{if(data.services?.length)setServices(data.services)}).catch(()=>{})},[]);
+  async function create(){if(!form.origin||!form.price)return toast.error("Completá el origen y el valor.");try{const r=await fetch("/api/services",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(form)});if(!r.ok)throw new Error();const {service}=await r.json();setServices([service,...services]);setOpen(false);setForm({...form,origin:"",destination:"",price:""});toast.success(`${service.id} publicado en la red.`)}catch{toast.error("No se pudo guardar. Intentá nuevamente.")}}
+  async function update(id:string,status:Status){const provider=status==="Asignado"?"Tu unidad":services.find(s=>s.id===id)?.provider;try{const r=await fetch("/api/services",{method:"PATCH",headers:{"content-type":"application/json"},body:JSON.stringify({id,status,provider})});if(!r.ok)throw new Error();setServices(services.map(s=>s.id===id?{...s,status,provider}:s));toast.success(status==="Asignado"?"Servicio aceptado. La central fue notificada.":"Estado actualizado.")}catch{toast.error("No se pudo actualizar el servicio.")}}
   return <main className="app-shell"><Toaster richColors position="top-right"/>
     <header className="topbar"><button className="mobile-menu" onClick={()=>setNav(!nav)} aria-label="Abrir menú"><Menu/></button><Logo/><div className="role-switch"><button className={role==="central"?"active":""} onClick={()=>setRole("central")}>Central</button><button className={role==="prestador"?"active":""} onClick={()=>setRole("prestador")}>Prestador</button></div><div className="header-actions"><button className="icon-button"><Bell/><b>3</b></button><div className="user-chip"><span>JM</span><div><strong>Julio Mendoza</strong><small>Administrador</small></div></div></div></header>
     <aside className={`sidebar ${nav?"open":""}`}><nav><button className="nav-active"><Gauge/>Resumen</button><button><Truck/>Servicios <span>{active}</span></button><button><Users/>Prestadores</button><button><MapPin/>Mapa de unidades</button><button><CircleDollarSign/>Liquidaciones</button><button><ShieldCheck/>Empresas</button></nav><div className="support-card"><Headphones/><strong>Central operativa</strong><p>Soporte disponible las 24 horas.</p><a href="tel:+543487210379"><Phone/>3487 210379</a></div></aside>
