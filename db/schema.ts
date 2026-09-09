@@ -20,3 +20,13 @@ export const services = sqliteTable("services", {
   providerName: text("provider_name"), eta: integer("eta"), createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
   updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
 }, (table) => [index("idx_services_status_created").on(table.status, table.createdAt)]);
+
+export const accessUsers = sqliteTable("access_users", {
+  id: integer("id").primaryKey({ autoIncrement: true }), phone: text("phone").notNull().unique(),
+  displayName: text("display_name").notNull(), role: text("role", { enum: ["admin", "operator", "provider"] }).notNull().default("provider"),
+  active: integer("active", { mode: "boolean" }).notNull().default(true), createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+});
+export const sessions = sqliteTable("sessions", {
+  id: integer("id").primaryKey({ autoIncrement: true }), userId: integer("user_id").notNull().references(() => accessUsers.id),
+  tokenHash: text("token_hash").notNull().unique(), expiresAt: text("expires_at").notNull(), createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+}, (table) => [index("idx_sessions_user_expires").on(table.userId, table.expiresAt)]);

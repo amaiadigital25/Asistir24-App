@@ -15,6 +15,13 @@
       "when": 1788983094193,
       "tag": "0001_confused_joseph",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1788983890802,
+      "tag": "0002_flaky_the_liberteens",
+      "breakpoints": true
     }
   ]
 }
