@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { integer, real, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { index, integer, real, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
 export const users = sqliteTable("users", {
   id: integer("id").primaryKey({ autoIncrement: true }), email: text("email").notNull().unique(),
@@ -11,7 +11,7 @@ export const providers = sqliteTable("providers", {
   businessName: text("business_name").notNull(), phone: text("phone").notNull(), vehicleType: text("vehicle_type").notNull(),
   status: text("status", { enum: ["offline", "available", "busy"] }).notNull().default("offline"),
   latitude: real("latitude"), longitude: real("longitude"), updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
-});
+}, (table) => [index("idx_providers_status").on(table.status)]);
 export const services = sqliteTable("services", {
   id: integer("id").primaryKey({ autoIncrement: true }), code: text("code").notNull().unique(), type: text("type").notNull(),
   company: text("company").notNull(), origin: text("origin").notNull(), destination: text("destination").notNull().default("—"),
@@ -19,4 +19,4 @@ export const services = sqliteTable("services", {
   status: text("status", { enum: ["Disponible", "Asignado", "En camino", "Finalizado"] }).notNull().default("Disponible"),
   providerName: text("provider_name"), eta: integer("eta"), createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
   updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
-});
+}, (table) => [index("idx_services_status_created").on(table.status, table.createdAt)]);
