@@ -1,0 +1,43 @@
+:root{
+  --primary:#035CB8;
+  --ring:#035CB8;
+  --accent:#EEF5FF;
+  --accent-foreground:#291557;
+}
+
+.brand{
+  min-width:210px;
+  height:58px;
+  background:url('/asistir24-logo.svg') left center/contain no-repeat;
+  overflow:hidden;
+}
+.brand>*{visibility:hidden}
+
+.eyebrow{color:#035CB8!important}
+.primary-action,.publish,.job-actions button{background:#035CB8!important;box-shadow:0 7px 18px #035CB838!important}
+.sidebar{background:#291557}
+.sidebar nav .nav-active{background:#035CB8}
+.support-card{background:#351C6A}
+.support-card>svg{color:#64A9F1}
+.current-job{background:linear-gradient(120deg,#291557,#3B2376)}
+.icon-button b,.incident{background:#035CB8}
+.type-icon{background:#EEF5FF;color:#035CB8}
+.orange{background:#EEF5FF;color:#035CB8}
+.orange-dot{background:#035CB8}
+.route-line svg,.provider-stats svg,.offer-route svg{color:#035CB8}
+.offer-head>strong{color:#291557}
+.offer button{background:#291557}
+.user-chip>span{background:#291557}
+
+.auth-page{background:#fff}
+.auth-card{background:#fff}
+.auth-copy h1{color:#291557}
+.auth-copy>p:last-child{color:#6D7184}
+.auth-form button{background:#035CB8!important;color:white!important}
+.auth-brand-panel{background:linear-gradient(145deg,#291557 0%,#035CB8 100%)!important}
+.auth-brand-panel h2,.auth-brand-panel p,.auth-brand-panel svg{color:white!important}
+.phone-field:focus-within{border-color:#035CB8!important;box-shadow:0 0 0 3px #035CB818}
+
+@media(max-width:720px){
+  .brand{min-width:170px;height:50px}
+}
